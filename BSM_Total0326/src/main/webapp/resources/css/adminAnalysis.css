@@ -1,0 +1,13 @@
+body {
+	margin: 20px;
+	font-family: "¸¼Àº °íµñ";
+}
+#image_preview {
+	display:none;
+}
+.state {
+	display:none;
+}
+#buyItemBuyTime {
+	display:none;
+}

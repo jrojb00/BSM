@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ItemDAO">
+	<insert id="insertItem">
+		insert into t_item(id, name, price, stock_qty, sales_qty, comment, imgpath, img, ic_id, reg_date, alive)		
+		values (nextval('seq_item'), #{name}, #{price}, #{stockQuantity}, #{salesQuantity}, #{comment}, #{imgPath}, #{img}, #{icId}, now(), #{alive})
+	</insert>
+	
+	<update id="updateItem">
+		update t_item set name=#{name}, price=#{price},
+				stock_qty=#{stockQuantity}, comment=#{comment}, imgpath=#{imgPath}, img=#{img}, ic_id=#{icId} where id=#{id}
+	</update>
+	
+	<delete id="deleteItem">
+		delete from t_item where id=#{id}
+	</delete>	
+	
+	<select id="getItem" resultMap="ItemVO">
+		select * from t_item where id=#{id}
+	</select>
+	
+	<select id="maxId" resultType="int">
+		select max(id) from t_item
+	</select>
+	
+	<select id="getType" resultType="String">
+		select type from t_itemcategory where id=#{icId}
+	</select>
+	
+	<select id="getItemList" resultMap="ItemVO">	
+		select * from t_item 
+		<if test='searchCondition == "id"'>
+			where id = cast (#{searchKeyword} as Integer)
+		</if>
+		<if test='searchCondition == "name"'>
+			where name LIKE concat ('%', #{searchKeyword}, '%')
+		</if>
+		<if test='searchCondition == "type"'>
+			,t_itemcategory where t_item.ic_id = t_itemcategory.id 
+							  and type LIKE concat ('%', #{searchKeyword}, '%')
+		</if>
+		order by t_item.id desc
+	</select>
+	
+	<select id="allCategory" resultMap="ItemCategoryVO">
+		select * from t_itemcategory
+		 order by id;
+	</select>
+	
+	<insert id="insertBuyItem">
+		insert into t_buyitem(u_id, i_id, sales_qty, id, buy_time, state)		
+		values (#{uId}, #{iId}, #{salesQuantity}, nextval('seq_buyitem'), now(), false)
+	</insert>
+	
+	<update id="buyItem">
+		update t_item set stock_qty=stock_qty-#{salesQuantity}, sales_qty=sales_qty+#{salesQuantity} where id=#{iId}
+	</update>
+	
+	<select id="getNewItemList" resultMap="ItemVO">
+		select * from t_item 
+		 order by reg_date desc 
+		 limit 9 offset (#{pageNumber} - 1) * 9
+	</select>
+	
+	<select id="itemListCount" resultType="int">
+		select count(*) from t_item
+	</select>
+	
+	<select id="hitItemCount" resultType="int">
+		select count(*) 
+		  from (select count(t_item.id) from t_buyitem 
+				  join t_item on t_buyitem.i_id = t_item.id
+				 group by t_item.id) A
+	</select>
+	
+	<select id="getHitItem" resultMap="ItemVO">
+		select t_item.id, name, price, sum(t_buyitem.sales_qty) as sales_qty from t_buyitem 
+		  join t_item on t_buyitem.i_id = t_item.id 
+		 group by t_item.id
+		 order by sales_qty desc 
+		 limit 9 offset (#{pageNumber} - 1) * 9
+	</select>
+	
+	<select id="getItemListByType" resultMap="ItemVO">
+		select * from t_item
+		 where ic_id=#{icId}
+		 order by id desc;
+	</select>
+	
+	<select id="getItemListByTypeCount" resultType="int">
+		select count(*) from t_item
+		 where ic_id=#{icId}
+	</select>
+	
+	<update id="updateAlive">
+		update t_item set alive = #{alive} where id = #{id}
+	</update>
+	
+	<select id="isSoldItem" resultType="int">
+		select count(*) from t_buyitem where i_id=#{id}
+	</select>
+	
+	<select id="getMyFavoriteItemList" resultMap="ItemVO">
+		select * from t_item
+		  join t_itemcategory on t_item.ic_id = t_itemcategory.id 
+		 where
+		<foreach item="favoriteList" collection="myFavoriteList">
+			t_item.ic_id = #{favoriteList.icId} or
+		</foreach>
+		1=0
+		order by t_item.id desc
+		limit 9 offset (#{pageNumber} - 1) * 9
+	</select>
+	
+	<select id="favoriteItemListCount" resultType="int">
+		select count(*) from t_item
+		  join t_itemcategory on t_item.ic_id = t_itemcategory.id 
+		 where
+		<foreach item="favoriteList" collection="myFavoriteList">
+			t_item.ic_id = #{favoriteList.icId} or
+		</foreach>
+		1=0
+	</select>
+	
+	<select id="ageAnalysis" resultMap="BuyItemVO">
+		select generation(substring(t_user.security_number from 1 for 6)) as birth, sum(t_buyitem.sales_qty) as sum
+		  from t_item join t_buyitem on t_item.id = t_buyitem.i_id 
+					join t_user on t_user.id = t_buyitem.u_id
+				   where to_date(#{minDate}, 'yyyy-mm-dd') <![CDATA[ <= ]]> t_buyitem.buy_time and t_buyitem.buy_time <![CDATA[ <= ]]> to_date(#{maxDate}, 'yyyy-mm-dd')
+	    		   group by birth
+	    		   order by birth
+	</select>
+	
+	<select id="genderAnalysis" resultMap="BuyItemVO">
+		select t_user.gender as gender, sum(t_buyitem.sales_qty) as sum 
+		  from t_item join t_buyitem on t_item.id = t_buyitem.i_id 
+					join t_user on t_user.id = t_buyitem.u_id
+				   where to_date(#{minDate}, 'yyyy-mm-dd') <![CDATA[ <= ]]> t_buyitem.buy_time and t_buyitem.buy_time <![CDATA[ <= ]]> to_date(#{maxDate}, 'yyyy-mm-dd') 
+	    		   group by t_user.gender
+						  
+	</select>
+	
+	<select id="typeAnalysis" resultMap="BuyItemVO">
+		select t_itemcategory.type as type, sum(t_buyitem.sales_qty) as sum 
+		  from t_item join t_buyitem on t_item.id = t_buyitem.i_id 
+					join t_user on t_user.id = t_buyitem.u_id
+					join t_itemcategory on t_item.ic_id = t_itemcategory.id
+				   where to_date(#{minDate}, 'yyyy-mm-dd') <![CDATA[ <= ]]> t_buyitem.buy_time and t_buyitem.buy_time <![CDATA[ <= ]]> to_date(#{maxDate}, 'yyyy-mm-dd')
+	    		   group by t_itemcategory.type
+	</select>
+	
+	<select id="daysAnalysis" resultMap="BuyItemVO">
+		select substring(to_char(t_buyitem.buy_time, 'yyyy-mm-dd') from 1 for 10) as day, sum(t_buyitem.sales_qty) as sum 
+		  from t_item join t_buyitem on t_item.id = t_buyitem.i_id 
+					join t_user on t_user.id = t_buyitem.u_id
+				   where to_date(#{minDate}, 'yyyy-mm-dd') <![CDATA[ <= ]]> t_buyitem.buy_time and t_buyitem.buy_time <![CDATA[ <= ]]> to_date(#{maxDate}, 'yyyy-mm-dd') 
+	    		   group by day
+				   order by day
+	</select>
+	
+	<select id="monthsAnalysis" resultMap="BuyItemVO">
+		select substring(to_char(t_buyitem.buy_time, 'yyyy-mm-dd') from 1 for 7) as month, sum(t_buyitem.sales_qty) as sum 
+		  from t_item join t_buyitem on t_item.id = t_buyitem.i_id 
+					join t_user on t_user.id = t_buyitem.u_id
+				   where to_date(#{minDate}, 'yyyy-mm-dd') <![CDATA[ <= ]]> t_buyitem.buy_time and t_buyitem.buy_time <![CDATA[ <= ]]> to_date(#{maxDate}, 'yyyy-mm-dd') 
+	    		   group by month
+				   order by month
+	</select>
+	
+	<select id="yearsAnalysis" resultMap="BuyItemVO">
+		select substring(to_char(t_buyitem.buy_time, 'yyyy-mm-dd') from 1 for 4) as year, sum(t_buyitem.sales_qty) as sum 
+		  from t_item join t_buyitem on t_item.id = t_buyitem.i_id 
+					join t_user on t_user.id = t_buyitem.u_id
+				   where to_date(#{minDate}, 'yyyy-mm-dd') <![CDATA[ <= ]]> t_buyitem.buy_time and t_buyitem.buy_time <![CDATA[ <= ]]> to_date(#{maxDate}, 'yyyy-mm-dd') 
+	    		   group by year
+				   order by year
+	</select>
+	
+	<!-- 관리자모드에 모든 구매상품리스트 보여주기 -->
+	<select id="getDetailedBuyItemList" resultMap="BuyItemVO">
+		select 
+	    	B.id as id,
+	    	B.sales_qty,
+	    	B.buy_time,
+	    	B.i_id,
+	    	I.name as item_name,
+	    	I.price as item_price,
+	    	
+	    	B.u_id,
+	    	U.name as user_name,
+	    	U.is_admin,
+	    	U.phone_number,
+	    	U.address
+		from t_buyitem B
+		left outer join t_user U on B.u_id = U.id
+		left outer join t_item I on B.i_id = I.id
+		<if test='searchCondition == "id"'>
+			where B.id = cast (#{searchKeyword} as Integer)
+		</if>		
+		<if test='searchCondition == "buyerName"'>
+			where U.name LIKE concat ('%', #{searchKeyword}, '%')
+		</if>
+		<if test='searchCondition == "buyerAddress"'>
+			where U.address LIKE concat ('%', #{searchKeyword}, '%')
+		</if>
+		<if test='searchCondition == "itemName"'>
+			where I.name LIKE concat ('%', #{searchKeyword}, '%')
+		</if>
+		<if test='searchCondition == "state"'>
+			where B.state = cast(#{searchKeyword} as boolean)
+		</if>
+		<if test='searchCondition == "buyTime"'>
+			where B.buy_time = cast(#{searchKeyword} as date)
+		</if>
+		order by B.id desc;
+	</select>
+	
+	<resultMap type="ItemVO" id="ItemVO">
+		<result property="icId" column="ic_id"/>
+		<result property="stockQuantity" column="stock_qty"/>
+		<result property="salesQuantity" column="sales_qty"/>
+		<result property="registerDate" column="reg_date"/>
+	</resultMap>
+	
+	<!-- 관리자모드 거래내역에 보여줄 property를 BuyItemVO resultMap에 association추가 -->
+	<resultMap type="BuyItemVO" id="BuyItemVO">
+		<id property="id" column="id"/>
+		<result property="salesQuantity" column="sum"/>
+		<result property="salesQuantity" column="sales_qty"/>
+		<result property="buyTime" column="buy_time"/>
+		<result property="gender" column="gender"/>
+		<result property="type" column="type"/>
+		<result property="birth" column="birth"/>
+		<result property="uId" column="u_id"/>
+		<result property="iId" column="i_id"/>
+		<result property="day" column="day"/>
+		<result property="month" column="month"/>
+		<result property="year" column="year"/>
+		
+		<association property="item" javaType="ItemVO">
+			<id property="id" column="i_id"/>
+			<result property="name" column="item_name"/>
+			<result property="price" column="item_price"/>
+		</association>
+		<association property="buyer" javaType="UserVO">
+			<id property="id" column="u_id"/>
+			<result property="name" column="user_name"/>
+			<result property="isAdmin" column="is_admin"/>
+			<result property="phoneNumber" column="phone_number"/>
+			<result property="address" column="address"/>
+		</association>
+	</resultMap>
+	
+	<resultMap type="ItemCategoryVO" id="ItemCategoryVO">
+		<result property="parentId" column="parent_id"/>
+	</resultMap>
+</mapper>

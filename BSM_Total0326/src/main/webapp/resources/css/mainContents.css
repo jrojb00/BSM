@@ -1,0 +1,194 @@
+#wrap{ max-width:85em; background:white; text-align:center;}
+#slide{width:100%; height:50%; float:left; margin-top:20px; margin-bottom:0px; background:#F6F6F6;}
+#productmenu{width:700px; height:780px; float:left; text-align:left; background:white;}
+#product{width:100%; height:50%; float:left; margin-top:20px; margin-bottom:80px; margin-left:20px; margin-right:20px; background:white;}
+
+#sports_wear{
+	width:720px;
+	height:430px;
+	border:10px solid ligh tgray;
+	margin-bottom:0px;
+}
+#product_pic{
+	float:left;
+	width:400px;
+	height:430px;
+/* 	background:whitesmoke; */
+	padding-left:30px;
+	padding-right:30px;
+	margin-left:30px;
+	
+}
+#product_detail{
+	float:left;
+	width:350px;
+	height:430px;
+/* 	background:gainsboro */
+}
+#product_tbll{
+	margin:10px autoo;
+	font-size:12pt;
+	line-height:24pt;
+	font-family:³ª´®°íµñ;
+	font-color:gray;
+	table-width:320px;
+	border:7px double whitesmoke;
+}
+
+#product{
+	width:240px;
+	height:250px;
+	background:white;
+	margin-left:30px;
+	margin-right:15px;
+	margin-top:5px;
+	margin-bottom:20px;
+	float:left;
+	
+}
+
+#item{
+	width:200px;
+	height:210px;
+	margin-left:20px;
+	margin-right:20px;
+	background:white;
+	float:left;
+}
+
+#name{
+	width:100%;
+	height:20px;
+	background:white;
+	margin-top:10px;
+	float:left;
+	font-size:15pt;
+	font-weight:bold;
+	font-family:µ¸À½;
+}
+
+#price{
+	width:100%;
+	height:20px;
+	background:white;
+	margin-top:10px;
+	float:left;
+	font-size:15pt;
+	font-family:µ¸À½;
+}
+
+.slider{
+	overflow:hidden;
+	height:350px;
+	margin-bottom:0px
+}
+
+.slider figure div{
+	width:20%;
+	float:left;
+	
+}
+
+.slider figure img{
+	width:100%;
+	float:left;
+}
+
+.slider figure{
+	position: relative;
+	width:500%;
+	margin: 0;
+	left:0;
+	animation: 20s slidy infinite;
+}
+
+.product_title{
+	font-weight:bold;
+}
+
+.product_comment{
+	font-size:10pt;
+}
+
+.product_spec_price{
+	color:red;
+	font-size:14pt;
+}
+
+.sports_wear input[type=button],
+.sports_wear .log-twitter {
+    /* Size and position */
+    width: 95%;
+    height: 38px;
+    float: left;
+    position: relative;
+
+    /* Styles */
+    box-shadow: inset 0 1px rgba(255,255,255,0.3);
+    border-radius: 3px;
+    cursor: pointer;
+
+    /* Font styles */
+    font-family: 'Lato', Calibri, Arial, sans-serif;
+    font-size: 14px;
+    line-height: 38px; /* Same as height */
+    text-align: center;
+    font-weight: bold;
+}
+
+.sports_wear input[type=button] {
+    margin-left: 1%;
+    background: #EAEAEA;
+    border: 1px solid #EAEAEA;
+    color: #6c6763;
+    text-shadow: 0 1px rgba(255,255,255,0.3);
+}
+
+@keyframes slidy{
+	0%{
+		left:0%;
+	}
+	
+	10%{
+		left:0;
+	}
+	
+	20%{
+		left:-100%;
+	}
+	
+	30%{
+		left:-100%;
+	}
+	
+	40%{
+		left:-200%;
+	}
+	
+	50%{
+		left:-200%;
+	}
+	
+	60%{
+		left:-300%;
+	}
+	
+	70%{
+		left:-300%;
+	}
+
+	80%{
+		left:-400%;
+	}
+
+	90%{
+		left:-400%;
+	}
+	
+	100%{
+		left:0%;
+	}
+}
+td{
+	float:left;
+}

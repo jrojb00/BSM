@@ -1,0 +1,39 @@
+th{
+background:#eee; font-size:12px; text-align:left; border-top:1px solid #ccc; padding:5px 10px; width: 100px; height:70px;
+}
+
+td{
+font-size:12px; border-top:1px solid #ccc; padding:5px 10px; color:#000000;
+}
+
+table{
+border-bottom:1px solid #ccc;
+}
+
+input{
+vertical-align:middle; background:#f2f2f2; margin-right:3px;
+}
+
+button {
+    width:500px;
+    background-color: #353535;
+    border: none;
+    color:#fff;
+    padding: 15px 0;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 15px;
+    margin: 4px;
+    cursor: pointer;
+    border-radius:10px 10px 10px 10px;
+}
+
+button:hover {
+    background-color: gray;
+}
+
+#checkFont {
+	size : 2px;
+	color : red;
+}

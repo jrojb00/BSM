@@ -1,0 +1,155 @@
+#wrap{
+	max-width:85em; 
+	background:white; 
+	text-align:center;
+}
+
+#top{
+	width:100%; 
+	height:20%; 
+	float:left; 
+	margin-left:190px; 
+	margin-right:190px; 
+	background:white;
+}
+
+#menu1{
+	width:100%; 
+	height:100%; 
+	background:white;
+}
+
+#login{
+	width:30%; 
+	height:5%; 
+	float:right; 
+	margin-top:10px; 
+	margin-bottom:0px; 
+	background:white;
+}
+
+#middle{
+	width:100%; 
+	height:70%; 
+	float:left; 
+	margin-left:190px; 
+	margin-right:190px; 
+	background:white; 
+	margin-bottom:1px; 
+	border: 1px solid white;
+}
+
+#rogo{
+	width:20%; 
+	height:70%; 
+	float:left; 
+	margin-left:300px; 
+	margin-top:0px; 
+	margin-bottom:0px; 
+	background:white;
+}
+
+#serch{
+	width:60%; 
+	height:4%; 
+	float:left; 
+	margin-left:200px; 
+	margin-top:10px; 
+	background:white;
+}
+
+#menu{
+	width:100%; 
+	height:30%; 
+	float:left; 
+	margin-left:5px; 
+	margin-top:20px;
+	margin-bottom:10px;  
+	background:white;
+}
+
+#slide{
+	width:100%; 
+	height:50%; 
+	float:left;
+	margin-bottom:80px; 
+	background:white;
+}
+
+#menu ul { /* 메인 메뉴 안의 ul을 설정함: 상위메뉴의 ul+하위 메뉴의 ul */
+	list-style-type: none; /* 메인 메뉴 안의 ul 내부의 목록 표시를 없애줌 */
+	margin-left: 0px; /* 메인 메뉴 안의 ul의 margin을 없앰 */
+	padding: 0px; /* 메인 메뉴 안의 ul의 padding을 없앰 */		
+}
+
+#menu ul li { /* 메인 메뉴 안에 ul 태그 안에 있는 li 태그의 스타일 적용(상위/하위메뉴 모두) */
+	color: white; /* 글씨 색을 흰색으로 설정 */	
+	background-color: white; /* 배경 색을 RGB(2D2D2D)로 설정 */
+	float: left; /* 왼쪽으로 나열되도록 설정 */
+	line-height: 30px; /* 텍스트 한 줄의 높이를 30px로 설정 */
+	vertical-align: middle; /* 세로 정렬을 가운데로 설정 */
+	text-align: center; /* 텍스트를 가운데로 정렬 */
+	position: relative; /* 해당 li 태그 내부의 top/left 포지션 초기화 */	
+}
+
+#menu1 li{
+	margin-left:40px;
+	margin-right:30px;
+}
+
+@media screen and (max-width:1024px) {
+	.video{ float:left; width:560px }
+	.board{ float:left; width:100% }
+	.join{ float:left; width:100% }
+}
+
+@media screen and (min-width:1025px) {
+    .video{ /*float:right; width:560px*/ display: block; width: 100%; background: #fff;}
+    .board{ float:right; width:560px }
+    .join{ float:left; width:610px }
+}
+
+.menuLink { /* 상위 메뉴와 하위 메뉴의 a 태그에 공통으로 설정할 스타일 */
+	text-decoration: none; /* a 태그의 꾸밈 효과 제거 */
+	display: block; /* a 태그의 클릭 범위를 넓힘 */
+	width: 100px; /* 기본 넓이를 150px로 설정 */
+	font-size: 18px; /* 폰트 사이즈를 12px로 설정 */
+	font-family: "Trebuchet MS", Dotum; /* 기본 폰트를 영어/한글 순서대로 설정 */
+}
+
+.menuLink { /* 상위 메뉴의 글씨색을 흰색으로 설정 */
+	color: black;
+}
+
+.topMenuLi:hover .menuLink { /* 상위 메뉴의 li에 마우스오버 되었을 때 스타일 설정 */
+	color: #A6A6A6; /* 글씨 색 빨간색 */
+	background-color: white; /* 배경색을 밝은 회색으로 설정 */
+}
+  
+a.sidemenu:link {
+	color:black;
+	text-decoration: none;
+}
+
+a.sidemenu:visited {
+	color:black;
+	text-decoration: none;
+}
+
+a.sidemenu:active {
+	color:black;
+	text-decoration: none;
+}
+
+a.sidemenu:hover {
+	color:red;
+	text-decoration: none;
+} 
+
+@media ( max-width: 480px ) {
+	
+}
+
+@media ( max-width: 480px ) {
+	
+}

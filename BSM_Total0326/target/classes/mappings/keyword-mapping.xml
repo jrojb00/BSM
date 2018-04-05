@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="KeywordDAO">
+	<insert id="insertKeyword">
+		insert into t_keyword (id, word) 
+		values (nextval('seq_keyword'), #{word})
+	</insert>
+	
+	<insert id="insertMappingKeyword">
+		insert into t_mappingkeyword (i_id, kw_id)
+		values (#{iId}, #{kwId})
+	</insert>
+	
+	<select id="lastItemId" resultType="int">
+		select last_value from seq_item
+	</select>
+	
+	<select id="lastKeywordId" resultType="int">
+		select last_value from seq_keyword
+	</select>
+	
+	<select id="findKeptKeyword" parameterType="java.util.List" resultType="KeywordVO">
+		select * from t_keyword where word in
+		<foreach item="keyword" collection="list"
+			open="(" separator="," close=")">
+			#{keyword.word}
+		</foreach>
+	</select>
+	
+	<select id="matchingKeyword" resultType="KeywordVO">
+		select * from t_keyword where word like (#{word})
+	</select>
+	
+	<select id="mappingKeyword" resultType="KeywordVO">
+		select * from t_item I
+		  join t_mappingkeyword M on I.id = M.i_id
+		  join t_keyword K on K.id = M.kw_id
+		 where K.id = #{id}
+	</select>
+	
+	<select id="searchLikeKeyword" parameterType="java.util.List" resultMap="ItemVO">
+		select I.*, K.id as kw_id, K.word
+		  from t_item I, t_mappingkeyword M, t_keyword K
+		 where (<foreach item="keyword" collection="list">
+					K.word like concat('%', #{keyword.word},'%') or
+			   </foreach>
+					1 = 0)
+		   and K.id = M.kw_id
+		   and M.i_id = I.id
+	</select>
+	
+	<select id="searchItemListCount" resultType="int">
+		select count(distinct i.id)
+		  from t_item I, t_mappingkeyword M, t_keyword K
+		 where (<foreach item="keyword" collection="list">
+					K.word like concat('%', #{keyword.word},'%') or
+			   </foreach>
+					1 = 0)
+		   and K.id = M.kw_id
+		   and M.i_id = I.id
+	</select>
+
+	<delete id="deleteKeywordMapping">
+		delete from t_mappingkeyword where i_id=#{id}
+	</delete>
+	
+	<resultMap type="KeywordVO" id="keywordResultMap">
+		<id property="id" column="kw_id"/>
+		<result property="word" column="word"/>
+	</resultMap>
+
+	<resultMap type="ItemVO" id="ItemVO">
+		<id property="id" column="id"/>
+		<result property="name" column="name"/>
+		<result property="price" column="price"/>
+		<result property="accuracy" column="accuracy"/>
+		<result property="imgPath" column="imgPath"/>
+		<result property="img" column="img"/>
+		<result property="icId" column="ic_id"/>
+		<result property="stockQuantity" column="stock_qty"/>
+		<result property="salesQuantity" column="sales_qty"/>
+		<result property="registerDate" column="reg_date"/>
+		<collection property="seachedKeywordList" javaType="java.util.ArrayList" resultMap="keywordResultMap"/>
+	</resultMap>
+</mapper>

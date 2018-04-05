@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="UserDAO">
+	<insert id="insertUser">
+		insert into t_user(id, name, login_id, login_password, email, address , phone_number, gender, security_number, is_admin)
+		values(nextval('seq_user'), #{name}, #{loginId}, #{loginPassword}, #{email}, #{address}, #{phoneNumber}, #{gender}, #{securityNumber}, #{isAdmin})
+	</insert>
+
+	<update id="updateInfo">
+		update t_user set phone_number=#{phoneNumber},
+		address=#{address}, email=#{email} where id=#{id}
+	</update>
+
+	<delete id="deleteUser">
+		delete from t_user where id = #{id}
+	</delete>
+	
+	<select id="checkID" resultType="integer">
+		select count(*) from t_user where login_id = #{loginId}
+	</select>
+	
+	<select id="LogIn" resultMap="UserVO">
+		select U.id, U.name, U.login_id, U.email, U.address, U.gender, U.security_number, U.phone_number, U.is_admin,
+			   B.id as buyitem_id, B.sales_qty as buyitem_sales_qty, B.buy_time as buyitem_buy_time, B.state as buyitem_state,
+			   I.id as item_i_id, I.name as item_name, I.price as item_price, I.imgpath as item_imgpath, I.img as item_img, 
+			   I.ic_id as item_ic_id, I.comment as item_comment, I.sales_qty as item_sales_qty 
+		  from  t_buyitem B
+		 right outer join t_user U
+		    on U.id = B.u_id
+		  left join t_item I
+		    on I.id = B.i_id
+		 where login_id = #{loginId} and login_password = #{loginPassword}
+	</select>
+	
+	<select id="getMyInfo" resultMap="UserVO">
+		select U.id, U.name, U.login_id, U.email, U.address, U.gender, U.security_number, U.phone_number, U.is_admin,
+			   B.id as buyitem_id, B.sales_qty as buyitem_sales_qty, B.buy_time as buyitem_buy_time, B.state as buyitem_state,
+			   I.id as item_i_id, I.name as item_name, I.price as item_price, I.imgpath as item_imgpath, I.img as item_img, 
+			   I.ic_id as item_ic_id, I.comment as item_comment, I.sales_qty as item_sales_qty
+		  from t_buyitem B
+		 right outer join t_user U
+		    on U.id = B.u_id
+		  left join t_item I
+		    on I.id = B.i_id
+		 where U.id = #{id}
+	</select>
+	
+	<insert id="insertMyFavorite">
+		insert into t_favoritecategory(id, u_id, ic_id)
+		values(nextval('seq_favorite'), #{uId}, #{icId})
+	</insert>
+	
+	<delete id="deleteMyFavorite">
+		delete from t_favoritecategory where u_id = #{uId}
+	</delete>
+	
+	<select id="checkMyFavorite" resultType="integer">
+		select count(*) from t_favoritecategory where ic_id = #{icId} and u_id = #{uId}
+	</select>
+	
+	<select id="getMyFavorite" resultMap="FavoriteCategoryVO">
+		select * from t_itemcategory 
+		  join t_favoritecategory on t_itemcategory.id = t_favoritecategory.ic_id
+		 where u_id = #{id}
+	</select>
+	
+	<select id="getUserList" resultMap="UserVO">
+		select * from t_user
+		<if test='searchCondition == "id"'>
+			where id = cast (#{searchKeyword} as Integer)
+		</if>
+		<if test='searchCondition == "loginId"'>
+			where login_id LIKE concat ('%', #{searchKeyword}, '%')
+		</if>
+		<if test='searchCondition == "name"'>
+			where name LIKE concat ('%', #{searchKeyword}, '%')
+		</if>
+		<if test='searchCondition == "address"'>
+			where address LIKE concat ('%', #{searchKeyword}, '%')
+		</if>		
+		order by id desc	
+	</select>
+	
+	<resultMap type="UserVO" id="UserVO">
+		<id property="id" column="id"/>
+		<result property="name" column="name"/>
+		<result property="gender" column="gender"/>
+		<result property="securityNumber" column="security_number"/>
+		<result property="loginId" column="login_id"/>
+		<result property="loginPassword" column="login_password"/>
+		<result property="phoneNumber" column="phone_number"/>
+		<result property="email" column="email"/>
+		<result property="address" column="address"/>
+		<result property="isAdmin" column="is_admin"/>
+		<collection property="purchasingList" javaType="java.util.ArrayList" resultMap="BuyItemVO"/>
+	</resultMap>
+	
+	<resultMap type="FavoriteCategoryVO" id="FavoriteCategoryVO">
+		<result property="uId" column="u_id"/>
+		<result property="icId" column="ic_id"/>
+	</resultMap>
+	
+	<resultMap type="ItemCategoryVO" id="ItemCategoryVO">
+		<result property="parentId" column="parent_id"/>
+	</resultMap>
+	
+	<resultMap type="BuyItemVO" id="BuyItemVO">
+		<id property="id" column="buyitem_id"/>
+		<result property="salesQuantity" column="buyitem_sales_qty"/>
+		<result property="buyTime" column="buyitem_buy_time"/>
+		<result property="state" column="buyitem_state"/>
+		<association property="item" javaType="ItemVO">
+			<id property="id" column="item_i_id"/>
+			<result property="name" column="item_name"/>
+			<result property="price" column="item_price"/>
+			<result property="imgPath" column="item_imgpath"/>
+			<result property="img" column="item_img"/>
+			<result property="icId" column="item_ic_id"/>
+			<result property="comment" column="item_comment"/>
+			<result property="salesQuantity" column="item_sales_qty"/>
+		</association>
+	</resultMap>
+</mapper>
